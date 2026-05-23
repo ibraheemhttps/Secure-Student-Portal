@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card p-4" style="background: linear-gradient(135deg, #1a1a2e, #16213e); color: white;">
+            <h3 class="fw-bold">📋 {{ student.username }}'s Marks</h3>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-light btn-sm mt-2">← Back</a>
+        </div>
+    </div>
+</div>
+
+<!-- Add Mark Form -->
+<div class="card p-4 mb-4">
+    <h5 class="fw-bold mb-3">➕ Add New Mark</h5>
+    <form method="POST" action="{{ url_for('add_mark', student_id=student.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row">
+            <div class="col-md-5 mb-3">
+                <label class="form-label">Subject</label>
+                <input type="text" name="subject" class="form-control"
+                       placeholder="e.g. Mathematics" required maxlength="100">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Marks (0-100)</label>
+                <input type="number" name="marks" class="form-control"
+                       placeholder="e.g. 85" min="0" max="100" required>
+            </div>
+            <div class="col-md-3 mb-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-success w-100">Add Mark</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Marks Table -->
+<div class="card p-4">
+    <h5 class="fw-bold mb-3">📊 Current Marks</h5>
+    {% if marks %}
+    <table class="table table-hover table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Subject</th>
+                <th>Marks</th>
+                <th>Grade</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mark in marks %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ mark.subject }}</td>
+                <td>{{ mark.marks }}</td>
+                <td>
+                    {% if mark.marks >= 80 %}
+                        <span class="badge bg-success">A</span>
+                    {% elif mark.marks >= 65 %}
+                        <span class="badge bg-primary">B</span>
+                    {% elif mark.marks >= 50 %}
+                        <span class="badge bg-warning text-dark">C</span>
+                    {% else %}
+                        <span class="badge bg-danger">F</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('delete_mark', mark_id=mark.id, student_id=student.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Delete this mark?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">No marks added yet for this student.</div>
+    {% endif %}
+</div>
+
+{% endblock %}

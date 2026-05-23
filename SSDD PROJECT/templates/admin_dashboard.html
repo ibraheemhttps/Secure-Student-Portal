@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card p-4" style="background: linear-gradient(135deg, #1a1a2e, #16213e); color: white;">
+            <h3 class="fw-bold">👨‍💼 Admin Panel</h3>
+            <p class="mb-0 opacity-75">Welcome, {{ current_user.username }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="card p-4">
+    <h5 class="fw-bold mb-3">👨‍🎓 All Students</h5>
+    {% if students %}
+    <table class="table table-hover table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Status</th>
+                <th>Failed Attempts</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in students %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ s.username }}</td>
+                <td>
+                    {% if s.is_locked %}
+                        <span class="badge bg-danger">🔒 Locked</span>
+                    {% else %}
+                        <span class="badge bg-success">✅ Active</span>
+                    {% endif %}
+                </td>
+                <td>{{ s.failed_attempts }} / 5</td>
+                <td>
+                    <a href="{{ url_for('view_student', student_id=s.id) }}"
+                       class="btn btn-sm btn-primary">View Marks</a>
+
+                    {% if s.is_locked %}
+                    <form method="POST"
+                          action="{{ url_for('unlock_user', user_id=s.id) }}"
+                          style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-warning">🔓 Unlock</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">No students registered yet.</div>
+    {% endif %}
+</div>
+
+{% endblock %}

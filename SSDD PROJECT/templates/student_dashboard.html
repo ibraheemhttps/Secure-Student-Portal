@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Welcome Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card p-4" style="background: linear-gradient(135deg, #1a1a2e, #16213e); color: white;">
+            <h3 class="fw-bold">👋 Welcome, {{ user.username }}!</h3>
+            <p class="mb-0 opacity-75">Role: <span class="badge bg-primary">{{ user.role }}</span></p>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <h6 class="text-muted">Total Subjects</h6>
+            <h2 class="fw-bold text-primary">{{ marks|length }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <h6 class="text-muted">Average Marks</h6>
+            <h2 class="fw-bold text-success">{{ average }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <h6 class="text-muted">Status</h6>
+            <h2 class="fw-bold 
+                {% if average >= 50 %}text-success
+                {% elif average > 0 %}text-warning
+                {% else %}text-secondary{% endif %}">
+                {% if average >= 50 %}Pass
+                {% elif average > 0 %}Fail
+                {% else %}N/A{% endif %}
+            </h2>
+        </div>
+    </div>
+</div>
+
+<!-- Marks Table -->
+<div class="card p-4">
+    <h5 class="fw-bold mb-3">📊 My Marks</h5>
+
+    {% if marks %}
+    <table class="table table-hover table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Subject</th>
+                <th>Marks</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mark in marks %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ mark.subject }}</td>
+                <td>{{ mark.marks }}</td>
+                <td>
+                    {% if mark.marks >= 80 %}
+                        <span class="badge bg-success">A</span>
+                    {% elif mark.marks >= 65 %}
+                        <span class="badge bg-primary">B</span>
+                    {% elif mark.marks >= 50 %}
+                        <span class="badge bg-warning text-dark">C</span>
+                    {% else %}
+                        <span class="badge bg-danger">F</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-info">
+        📭 No marks added yet. Please check back later.
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
